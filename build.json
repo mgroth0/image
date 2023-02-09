@@ -1,0 +1,10 @@
+{
+    "type": "matt.mstruct.bj.BasicJvmOnlyMod",
+    "dependencies": [
+        {
+            "type": "Lib",
+            "cfg": "api",
+            "key": "kt-stdlib"
+        }
+    ]
+}
