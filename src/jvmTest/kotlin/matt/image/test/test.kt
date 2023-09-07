@@ -1,7 +1,7 @@
 package matt.image.test
 
 
-import matt.image.ICON_SIZES
+import matt.image.icon.ICON_SIZES
 import matt.test.JupiterTestAssertions.assertRunsInOneMinute
 import kotlin.test.Test
 
