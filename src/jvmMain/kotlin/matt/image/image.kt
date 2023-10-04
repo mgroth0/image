@@ -40,7 +40,9 @@ fun Png.toBufferedImage() = bytes.readImage()
 
 private fun ByteArray.readImage() = inputStream().readImage()
 
-private fun InputStream.readImage() = ImageIO.read(this) ?: throwExplainingImageIoReadReturningNull()
-private fun File.readImage() = ImageIO.read(this) ?: throwExplainingImageIoReadReturningNull()
-private fun throwExplainingImageIoReadReturningNull(): Nothing =
-    error("no registered ImageReader claims to be able to read this")
+private fun InputStream.readImage() =
+    ImageIO.read(this) ?: throwExplainingImageIoReadReturningNull("this image input stream")
+
+private fun File.readImage() = ImageIO.read(this) ?: throwExplainingImageIoReadReturningNull(path)
+private fun throwExplainingImageIoReadReturningNull(image: String): Nothing =
+    error("no registered ImageReader claims to be able to read $image")
