@@ -1,5 +1,6 @@
 package matt.image.convert
 
+import matt.image.Jpeg
 import matt.image.Png
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -16,9 +17,27 @@ fun jswingIconToImage(jswingIcon: javax.swing.Icon): BufferedImage {
 }
 
 
-
 fun BufferedImage.toPng(): Png {
     val stream = ByteArrayOutputStream()
-    ImageIO.write(this, "png", stream)
+    check(ImageIO.write(this, "png", stream)) {
+        "could not find writer. Available: ${ImageIO.getWriterFormatNames().toList().joinToString { it }}"
+    }
     return Png(stream.toByteArray())
+}
+
+
+fun BufferedImage.toJPeg(): Jpeg {
+    check(!this.colorModel.hasAlpha()) {
+        "I think JPEG cannot encode alpha"
+    }
+    /*check(JPEGImageWriterSpi().canEncodeImage(this)) {
+        "JPEGImageWriterSpi cannot encode this"
+    }*/
+    val stream = ByteArrayOutputStream()
+    check(ImageIO.write(this, "jpg", stream)) {
+        "could not find writer. Available: ${ImageIO.getWriterFormatNames().toList().joinToString { it }}"
+    }
+    val jpegBytes = stream.toByteArray()
+    println("jpegBytes.size=${jpegBytes.size}")
+    return Jpeg(jpegBytes)
 }

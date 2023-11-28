@@ -3,13 +3,21 @@
 
 package matt.image
 
+import matt.image.convert.toJPeg
 import matt.image.convert.toPng
+import matt.lang.anno.ProbablyCanOptimizeWayMore
+import matt.lang.anno.SupportedByChatGPT
 import matt.lang.anno.ok.JavaIoFileIsOk
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import javax.imageio.ImageIO
+
+
+interface JDesktopRaster : Raster {
+    fun toBufferedImage(): BufferedImage
+}
 
 
 @JvmInline
@@ -36,7 +44,37 @@ fun ByteArray.isValidImage(): Boolean {
 }
 
 fun File.loadImage() = this.readImage()
-fun Png.toBufferedImage() = bytes.readImage()
+
+
+fun ImmutableRaster.toBufferedImage() = when (this) {
+    is Png  -> bytes.readImage()
+    is Jpeg -> bytes.readImage()
+    is Argb -> {
+        @SupportedByChatGPT
+        val bufferedImage = BufferedImage(width, pixels.size / width, BufferedImage.TYPE_INT_ARGB)
+
+        pixels.forEachIndexed { index, pixel ->
+            val x = index % width
+            val y = index / width
+            bufferedImage.setRGB(x, y, pixel)
+        }
+
+        bufferedImage
+    }
+}
+
+@ProbablyCanOptimizeWayMore
+actual fun pngToJpeg(png: Png) = png.toBufferedImage().toJPeg()
+
+@ProbablyCanOptimizeWayMore
+actual fun jpegToPng(jpeg: Jpeg) = jpeg.toBufferedImage().toPng()
+
+@ProbablyCanOptimizeWayMore
+actual fun argbToPng(argb: Argb) = argb.toBufferedImage().toPng()
+
+@ProbablyCanOptimizeWayMore
+actual fun argbToJpeg(argb: Argb) = argb.toBufferedImage().toJPeg()
+
 
 private fun ByteArray.readImage() = inputStream().readImage()
 
@@ -46,3 +84,5 @@ private fun InputStream.readImage() =
 private fun File.readImage() = ImageIO.read(this) ?: throwExplainingImageIoReadReturningNull(path)
 private fun throwExplainingImageIoReadReturningNull(image: String): Nothing =
     error("no registered ImageReader claims to be able to read $image")
+
+
