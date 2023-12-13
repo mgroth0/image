@@ -13,7 +13,13 @@ fun tryToLoadImageStreamAndTakeLargestImage(
     url: URL,
     onMinorException: (e: Exception) -> Unit
 ): BufferedImage? {
-    val stream = url.openStream()
+    val stream = try {
+        url.openStream()
+    } catch (e: FileNotFoundException) {
+        onMinorException(e)
+        return null
+    }
+
     val ims = try {
         val imStream = ImageIO.createImageInputStream(stream)
         val readerIterator = ImageIO.getImageReaders(imStream)
@@ -33,9 +39,6 @@ fun tryToLoadImageStreamAndTakeLargestImage(
             }
             images
         }
-    } catch (e: FileNotFoundException) {
-        onMinorException(e)
-        return null
     } catch (e: IOException) {
         onMinorException(e)
         return null

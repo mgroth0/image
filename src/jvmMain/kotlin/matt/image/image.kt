@@ -8,8 +8,12 @@ import matt.image.convert.toPng
 import matt.lang.anno.ProbablyCanOptimizeWayMore
 import matt.lang.anno.SupportedByChatGPT
 import matt.lang.anno.ok.JavaIoFileIsOk
+import matt.lang.file.toJFile
+import matt.lang.model.file.types.RasterImage
+import matt.lang.model.file.types.TypedFile
 import java.awt.image.BufferedImage
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import javax.imageio.ImageIO
@@ -76,7 +80,7 @@ actual fun argbToPng(argb: Argb) = argb.toBufferedImage().toPng()
 actual fun argbToJpeg(argb: Argb) = argb.toBufferedImage().toJPeg()
 
 
-private fun ByteArray.readImage() = inputStream().readImage()
+fun ByteArray.readImage() = inputStream().readImage()
 
 private fun InputStream.readImage() =
     ImageIO.read(this) ?: throwExplainingImageIoReadReturningNull("this image input stream")
@@ -85,4 +89,12 @@ private fun File.readImage() = ImageIO.read(this) ?: throwExplainingImageIoReadR
 private fun throwExplainingImageIoReadReturningNull(image: String): Nothing =
     error("no registered ImageReader claims to be able to read $image")
 
+
+fun TypedFile<RasterImage>.readWidth() = ImageIO.read(this.toJFile()).width
+
+fun TypedFile<RasterImage>.readWidthOrNullIfDoesNotExist() = try {
+    ImageIO.read(this.toJFile()).width
+} catch (e: FileNotFoundException) {
+    null
+}
 

@@ -7,6 +7,11 @@
       "path": ":k:lang"
     },
     {
+      "type": "Project",
+      "cfg": "commonMainApi",
+      "path": ":k:color"
+    },
+    {
       "type": "Lib",
       "cfg": "commonMainApi",
       "key": "kotlinx-serialization-core"

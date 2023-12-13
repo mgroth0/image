@@ -17,9 +17,15 @@ fun jswingIconToImage(jswingIcon: javax.swing.Icon): BufferedImage {
 }
 
 
+object ImageIoFormats {
+    const val PNG = "png"
+    const val JPG = "jpg"
+}
+
+
 fun BufferedImage.toPng(): Png {
     val stream = ByteArrayOutputStream()
-    check(ImageIO.write(this, "png", stream)) {
+    check(ImageIO.write(this, ImageIoFormats.PNG, stream)) {
         "could not find writer. Available: ${ImageIO.getWriterFormatNames().toList().joinToString { it }}"
     }
     return Png(stream.toByteArray())
@@ -27,6 +33,9 @@ fun BufferedImage.toPng(): Png {
 
 
 fun BufferedImage.toJPeg(): Jpeg {
+
+
+
     check(!this.colorModel.hasAlpha()) {
         "I think JPEG cannot encode alpha"
     }
@@ -34,10 +43,10 @@ fun BufferedImage.toJPeg(): Jpeg {
         "JPEGImageWriterSpi cannot encode this"
     }*/
     val stream = ByteArrayOutputStream()
-    check(ImageIO.write(this, "jpg", stream)) {
+    check(ImageIO.write(this, ImageIoFormats.JPG, stream)) {
         "could not find writer. Available: ${ImageIO.getWriterFormatNames().toList().joinToString { it }}"
     }
     val jpegBytes = stream.toByteArray()
-    println("jpegBytes.size=${jpegBytes.size}")
     return Jpeg(jpegBytes)
 }
+
