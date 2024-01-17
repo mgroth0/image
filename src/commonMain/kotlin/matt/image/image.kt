@@ -2,7 +2,8 @@ package matt.image
 
 import kotlinx.serialization.Serializable
 import matt.lang.anno.SeeURLs
-import matt.lang.mime.MimeData
+import matt.lang.mime.BinaryCachingTextMimeData
+import matt.lang.mime.BinaryMimeData
 
 
 interface Image
@@ -35,7 +36,7 @@ sealed interface NativeSkiaDecodableRaster : ByteBasedRaster
 sealed interface NativeAndroidAndSkiaDecodableRaster : ByteBasedRaster
 
 @Serializable
-class Png(override val bytes: ByteArray) : NativeAndroidAndSkiaDecodableRaster {
+class Png(override val bytes: ByteArray) : NativeAndroidAndSkiaDecodableRaster, BinaryMimeData {
     override fun toPng(): Png {
         return this
     }
@@ -43,6 +44,14 @@ class Png(override val bytes: ByteArray) : NativeAndroidAndSkiaDecodableRaster {
     override fun toJpeg(): Jpeg {
         return pngToJpeg(this)
     }
+
+    override val mimeType: String get() = matt.lang.model.file.types.Png.mimeType
+
+
+    override val data: ByteArray
+        get() = bytes
+
+
 }
 
 internal expect fun pngToJpeg(png: Png): Jpeg
@@ -90,11 +99,9 @@ interface VectorGraphic : Image
 
 
 @Serializable
-class Svg(val code: CharSequence) : VectorGraphic, MimeData {
+class Svg(val code: CharSequence) : BinaryCachingTextMimeData(), VectorGraphic {
     override val mimeType = "image/svg+xml"
-    override val data by lazy {
-        code.toString()
-    }
+    override val textData by lazy { code.toString() }
 }
 
 
