@@ -1,10 +1,14 @@
 package matt.image
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 import matt.lang.anno.SeeURLs
-import matt.lang.mime.BinaryCachingTextMimeData
 import matt.lang.mime.BinaryMimeData
-
+import matt.lang.mime.BinaryRepresentableData
+import matt.lang.mime.CachingTextData
+import matt.lang.mime.TextMimeData
+import matt.lang.model.value.MyValueClass
+import matt.lang.model.value.MyValueClassSerializer
 
 interface Image
 interface ImmutableImage : Image
@@ -45,10 +49,10 @@ class Png(override val bytes: ByteArray) : NativeAndroidAndSkiaDecodableRaster, 
         return pngToJpeg(this)
     }
 
-    override val mimeType: String get() = matt.lang.model.file.types.Png.mimeType
+    override val mimeType get() = matt.lang.model.file.types.Png.mimeType
 
 
-    override val data: ByteArray
+    override val asBinary: ByteArray
         get() = bytes
 
 
@@ -98,10 +102,19 @@ internal expect fun argbToPng(argb: Argb): Png
 interface VectorGraphic : Image
 
 
-@Serializable
-class Svg(val code: CharSequence) : BinaryCachingTextMimeData(), VectorGraphic {
-    override val mimeType = "image/svg+xml"
-    override val textData by lazy { code.toString() }
+@Serializable(with = Svg.Serializer::class)
+class Svg(val code: String) : MyValueClass<String>(code.toString()),
+    BinaryRepresentableData by CachingTextData(code.toString()),
+    TextMimeData,
+    VectorGraphic {
+    constructor(codeSequence: CharSequence) : this(codeSequence.toString())
+
+    companion object Serializer : MyValueClassSerializer<String, Svg>(serializer<String>()) {
+        override fun construct(value: String) = Svg(value)
+    }
+
+    override val mimeType = matt.lang.model.file.types.Png.mimeType.copy(subType = "svg", suffix = "xml")
+    override val asText = code
 }
 
 

@@ -8,7 +8,7 @@ import matt.image.toBufferedImage
 import matt.lang.evenodd.isEven
 import matt.lang.jpy.ExcludeFromPython
 import matt.lang.jpy.PyClass
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import java.awt.image.BufferedImage
 import kotlin.math.roundToInt
 
@@ -31,10 +31,10 @@ fun BufferedImage.downsampleKeepingAr(
 ) = DownsampleKeepingAr(desiredWidth = desiredWidth, allowAlreadyLower = allowAlreadyLower).transform(this)
 
 
-fun FsFile.noTransform() = TransformingImage(this)
-fun FsFile.withTransform(transform: ImageTransform?) = TransformingImage(this, transform)
+fun AnyFsFile.noTransform() = TransformingImage(this)
+fun AnyFsFile.withTransform(transform: ImageTransform?) = TransformingImage(this, transform)
 class TransformingImage(
-    val file: FsFile,
+    val file: AnyFsFile,
     val transform: ImageTransform? = null
 )
 

@@ -90,9 +90,9 @@ private fun throwExplainingImageIoReadReturningNull(image: String): Nothing =
     error("no registered ImageReader claims to be able to read $image")
 
 
-fun TypedFile<RasterImage>.readWidth() = ImageIO.read(this.toJFile()).width
+fun TypedFile<RasterImage, *>.readWidth() = ImageIO.read(this.toJFile()).width
 
-fun TypedFile<RasterImage>.readWidthOrNullIfDoesNotExist() = try {
+fun TypedFile<RasterImage, *>.readWidthOrNullIfDoesNotExist() = try {
     ImageIO.read(this.toJFile()).width
 } catch (e: FileNotFoundException) {
     null
