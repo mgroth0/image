@@ -63,27 +63,22 @@ data class DownsampleKeepingAr(
     private val desiredWidth: Int,
     val allowAlreadyLower: Boolean
 ) : ImageTransform {
-    override fun transform(input: BufferedImage): BufferedImage {
-        return input.downsampleKeepingAr()
-    }
+    override fun transform(input: BufferedImage): BufferedImage = input.downsampleKeepingAr()
 
-    private fun BufferedImage.downsampleKeepingAr(): BufferedImage {
-        return when {
-            width < desiredWidth  -> {
-                if (!allowAlreadyLower) error("Current width (${width}) is less than desired width (${desiredWidth}).")
-                this
-            }
-
-            width == desiredWidth -> this
-            else                  -> {
-                val currentWidthDouble = width.toDouble()
-                val wPercent = desiredWidth / currentWidthDouble
-                val hSize = (height * wPercent).toInt()
-                val imgResized = resize(w = desiredWidth, h = hSize)
-                imgResized
-            }
+    private fun BufferedImage.downsampleKeepingAr(): BufferedImage = when {
+        width < desiredWidth  -> {
+            if (!allowAlreadyLower) error("Current width ($width) is less than desired width ($desiredWidth).")
+            this
         }
 
+        width == desiredWidth -> this
+        else                  -> {
+            val currentWidthDouble = width.toDouble()
+            val wPercent = desiredWidth / currentWidthDouble
+            val hSize = (height * wPercent).toInt()
+            val imgResized = resize(w = desiredWidth, h = hSize)
+            imgResized
+        }
     }
 }
 
@@ -92,9 +87,7 @@ data class CenteredProportionalResize(
     private val h: Float,
     private val w: Float
 ) : ImageTransform {
-    override fun transform(input: BufferedImage): BufferedImage {
-        return input.resize()
-    }
+    override fun transform(input: BufferedImage): BufferedImage = input.resize()
 
     private fun BufferedImage.resize(): BufferedImage {
         if (h == 1f && w == 1f) return this
@@ -119,16 +112,12 @@ data class Resize(
     private val h: Int,
     private val w: Int
 ) : ImageTransform {
-    override fun transform(input: BufferedImage): BufferedImage {
-        return input.resize()
-    }
+    override fun transform(input: BufferedImage): BufferedImage = input.resize()
 
-    private fun BufferedImage.resize(): BufferedImage {
-        return BufferedImage(w, h, this.type).also {
-            val g = it.createGraphics()
-            g.drawImage(this, 0, 0, w, h, null)
-            g.dispose()
-        }
+    private fun BufferedImage.resize(): BufferedImage = BufferedImage(w, h, this.type).also {
+        val g = it.createGraphics()
+        g.drawImage(this, 0, 0, w, h, null)
+        g.dispose()
     }
 }
 
@@ -160,9 +149,7 @@ data class Occlude(
 
 @PyClass
 data object Square : ImageTransform {
-    override fun transform(input: BufferedImage): BufferedImage {
-        return input.toSquare()
-    }
+    override fun transform(input: BufferedImage): BufferedImage = input.toSquare()
 
     private fun BufferedImage.toSquare(): BufferedImage {
         if (height == width) return this

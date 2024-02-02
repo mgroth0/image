@@ -37,9 +37,7 @@ actual fun argbToPng(argb: Argb): Png {
 actual fun argbToJpeg(argb: Argb): Jpeg = TODO()
 
 
-fun NativeAndroidAndSkiaDecodableRaster.toBitmap(): Bitmap {
-    return BitmapFactory.decodeByteArray(this.bytes, 0, bytes.size)
-}
+fun NativeAndroidAndSkiaDecodableRaster.toBitmap(): Bitmap = BitmapFactory.decodeByteArray(this.bytes, 0, bytes.size)
 
 @SupportedByChatGPT
 fun Argb.toBitmap(): Bitmap {

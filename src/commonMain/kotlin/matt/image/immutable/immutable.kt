@@ -17,9 +17,7 @@ class ImmutableByteArray(bytes: ByteArray) {
         }
         override val descriptor by lazy { byteArraySer.descriptor }
 
-        override fun deserialize(decoder: Decoder): ImmutableByteArray {
-            return ImmutableByteArray(decoder.decodeSerializableValue(byteArraySer))
-        }
+        override fun deserialize(decoder: Decoder): ImmutableByteArray = ImmutableByteArray(decoder.decodeSerializableValue(byteArraySer))
 
         override fun serialize(
             encoder: Encoder,

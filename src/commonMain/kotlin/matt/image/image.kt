@@ -41,13 +41,9 @@ sealed interface NativeAndroidAndSkiaDecodableRaster : ByteBasedRaster
 
 @Serializable
 class Png(override val bytes: ByteArray) : NativeAndroidAndSkiaDecodableRaster, BinaryMimeData {
-    override fun toPng(): Png {
-        return this
-    }
+    override fun toPng(): Png = this
 
-    override fun toJpeg(): Jpeg {
-        return pngToJpeg(this)
-    }
+    override fun toJpeg(): Jpeg = pngToJpeg(this)
 
     override val mimeType get() = matt.lang.model.file.types.Png.mimeType
 
@@ -62,13 +58,9 @@ internal expect fun pngToJpeg(png: Png): Jpeg
 
 @Serializable
 class Jpeg(override val bytes: ByteArray) : NativeAndroidAndSkiaDecodableRaster {
-    override fun toJpeg(): Jpeg {
-        return this
-    }
+    override fun toJpeg(): Jpeg = this
 
-    override fun toPng(): Png {
-        return jpegToPng(this)
-    }
+    override fun toPng(): Png = jpegToPng(this)
 }
 
 internal expect fun jpegToPng(jpeg: Jpeg): Png
@@ -79,13 +71,9 @@ class Argb(
     val pixels: IntArray,
     val width: Int
 ) : ImmutableRaster {
-    override fun toJpeg(): Jpeg {
-        return argbToJpeg(this)
-    }
+    override fun toJpeg(): Jpeg = argbToJpeg(this)
 
-    override fun toPng(): Png {
-        return argbToPng(this)
-    }
+    override fun toPng(): Png = argbToPng(this)
 
     val derivedHeight by lazy {
         val pixSize = pixels.size
