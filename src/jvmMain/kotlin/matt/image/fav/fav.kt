@@ -1,7 +1,8 @@
 package matt.image.fav
 
+import matt.lang.anno.SeeURL
+import matt.lang.fnf.runCatchingFileTrulyNotFound
 import java.awt.image.BufferedImage
-import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.net.URL
@@ -13,38 +14,44 @@ fun tryToLoadImageStreamAndTakeLargestImage(
     url: URL,
     onMinorException: (e: Exception) -> Unit
 ): BufferedImage? {
-    val stream = try {
-        url.openStream()
-    } catch (e: FileNotFoundException) {
-        onMinorException(e)
-        return null
-    }
+    val stream =
+        runCatchingFileTrulyNotFound(
+            file = { error("how to get file from $url?") }
+        ) {
+            url.openStream()
+        }.getOrElse {
+            onMinorException(it as Exception)
+            @SeeURL("https://youtrack.jetbrains.com/issue/KT-1436/Support-non-local-break-and-continue")
+            null
+        } ?: return null
 
-    val ims = try {
-        val imStream = ImageIO.createImageInputStream(stream)
-        val readerIterator = ImageIO.getImageReaders(imStream)
-        if (!readerIterator.hasNext()) {
-            onMinorException(Exception("READER ITERATOR HAS NO NEXT"))
-            return null
-        }
-        readerIterator.next().run {
-            input = imStream
-            val images = mutableListOf<BufferedImage>()
-            for (i in 0..<getNumImages(true)) {
-                val image = this.read(
-                    i,
-                    null
-                )
-                images += image
+    val ims =
+        try {
+            val imStream = ImageIO.createImageInputStream(stream)
+            val readerIterator = ImageIO.getImageReaders(imStream)
+            if (!readerIterator.hasNext()) {
+                onMinorException(Exception("READER ITERATOR HAS NO NEXT"))
+                return null
             }
-            images
+            readerIterator.next().run {
+                input = imStream
+                val images = mutableListOf<BufferedImage>()
+                for (i in 0..<getNumImages(true)) {
+                    val image =
+                        read(
+                            i,
+                            null
+                        )
+                    images += image
+                }
+                images
+            }
+        } catch (e: IOException) {
+            onMinorException(e)
+            return null
+        } finally {
+            stream.close()
         }
-    } catch (e: IOException) {
-        onMinorException(e)
-        return null
-    } finally {
-        stream.close()
-    }
     val im = ims.maxBy { it.height }
     return try {
         im

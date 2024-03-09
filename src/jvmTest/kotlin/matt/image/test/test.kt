@@ -5,33 +5,25 @@ import matt.image.convert.ImageIoFormats
 import matt.image.convert.toJPeg
 import matt.image.convert.toPng
 import matt.image.icon.ICON_SIZES
-import matt.image.immutable.ImmutableByteArray
-import matt.test.scaffold.TestScaffold
+import matt.test.Tests
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_BYTE_BINARY
+import kotlin.test.Test
 
-class ImageTests : TestScaffold() {
+class ImageTests : Tests() {
 
-    override fun initEnums() {
-    }
-
-    override fun initObjects() {
+    @Test fun initObjects() {
         ImageIoFormats
     }
 
-    override fun initVals() = assertRunsInOneMinute {
-        ICON_SIZES
-    }
+    @Test fun initVals() =
+        assertRunsInOneMinute {
+            ICON_SIZES
+        }
 
-    override fun instantiateClasses() {
-        ImmutableByteArray(byteArrayOf())
-    }
-
-    override fun runFunctions() {
+    @Test fun runFunctions() {
         val im = BufferedImage(1, 1, TYPE_BYTE_BINARY)
         im.toPng()
         im.toJPeg()
     }
-
-
 }

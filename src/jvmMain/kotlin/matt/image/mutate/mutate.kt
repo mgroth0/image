@@ -1,10 +1,10 @@
 package matt.image.mutate
 
-import matt.color.IntColor
+import matt.color.common.IntColor
 import matt.color.toAwtColor
-import matt.image.Jpeg
+import matt.image.common.Jpeg
 import matt.image.convert.toJPeg
-import matt.image.toBufferedImage
+import matt.image.desktop.toBufferedImage
 import matt.lang.evenodd.isEven
 import matt.lang.jpy.ExcludeFromPython
 import matt.lang.jpy.PyClass
@@ -65,21 +65,22 @@ data class DownsampleKeepingAr(
 ) : ImageTransform {
     override fun transform(input: BufferedImage): BufferedImage = input.downsampleKeepingAr()
 
-    private fun BufferedImage.downsampleKeepingAr(): BufferedImage = when {
-        width < desiredWidth  -> {
-            if (!allowAlreadyLower) error("Current width ($width) is less than desired width ($desiredWidth).")
-            this
-        }
+    private fun BufferedImage.downsampleKeepingAr(): BufferedImage =
+        when {
+            width < desiredWidth  -> {
+                if (!allowAlreadyLower) error("Current width ($width) is less than desired width ($desiredWidth).")
+                this
+            }
 
-        width == desiredWidth -> this
-        else                  -> {
-            val currentWidthDouble = width.toDouble()
-            val wPercent = desiredWidth / currentWidthDouble
-            val hSize = (height * wPercent).toInt()
-            val imgResized = resize(w = desiredWidth, h = hSize)
-            imgResized
+            width == desiredWidth -> this
+            else                  -> {
+                val currentWidthDouble = width.toDouble()
+                val wPercent = desiredWidth / currentWidthDouble
+                val hSize = (height * wPercent).toInt()
+                val imgResized = resize(w = desiredWidth, h = hSize)
+                imgResized
+            }
         }
-    }
 }
 
 @PyClass
@@ -99,10 +100,12 @@ data class CenteredProportionalResize(
         check(outputWidth > 0)
         val cutOutHeight = height - outputHeight
         val cutOutWidth = width - outputWidth
-        val cutOutHeightTop = if (cutOutHeight.isEven()) cutOutHeight / 2
-        else (cutOutHeight - 1) / 2
-        val cutOutWidthLeft = if (cutOutWidth.isEven()) cutOutWidth / 2
-        else (cutOutWidth - 1) / 2
+        val cutOutHeightTop =
+            if (cutOutHeight.isEven()) cutOutHeight / 2
+            else (cutOutHeight - 1) / 2
+        val cutOutWidthLeft =
+            if (cutOutWidth.isEven()) cutOutWidth / 2
+            else (cutOutWidth - 1) / 2
         return getSubimage(cutOutWidthLeft, cutOutHeightTop, outputWidth, outputHeight)
     }
 }
@@ -114,11 +117,12 @@ data class Resize(
 ) : ImageTransform {
     override fun transform(input: BufferedImage): BufferedImage = input.resize()
 
-    private fun BufferedImage.resize(): BufferedImage = BufferedImage(w, h, this.type).also {
-        val g = it.createGraphics()
-        g.drawImage(this, 0, 0, w, h, null)
-        g.dispose()
-    }
+    private fun BufferedImage.resize(): BufferedImage =
+        BufferedImage(w, h, type).also {
+            val g = it.createGraphics()
+            g.drawImage(this, 0, 0, w, h, null)
+            g.dispose()
+        }
 }
 
 
@@ -140,10 +144,7 @@ data class Occlude(
         g2d.fillRect(x, y, w, h)
         g2d.dispose()
         return output
-
     }
-
-
 }
 
 
