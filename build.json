@@ -1,37 +1,45 @@
 {
-  "type": "MultiPlatformModule",
-  "dependencies": [
-    {
-      "type": "Project",
-      "cfg": "commonMainApi",
-      "path": ":k:lang"
+    "type": "MultiPlatformModule",
+    "dependencies": [
+        {
+            "type": "Project",
+            "cfg": "commonMainApi",
+            "path": ":k:lang"
+        },
+        {
+            "type": "Project",
+            "cfg": "commonMainApi",
+            "path": ":k:model"
+        },
+        {
+            "type": "Project",
+            "cfg": "commonMainApi",
+            "path": ":k:color"
+        },
+        {
+            "type": "Lib",
+            "cfg": "commonMainApi",
+            "key": "kotlinx-serialization-core"
+        },
+        {
+            "type": "Project",
+            "cfg": "commonJvmAndroidTestImplementation",
+            "path": ":k:test"
+        },
+        {
+            "type": "Project",
+            "cfg": "androidInstrumentedTestImplementation",
+            "path": ":k:test:ainstrument"
+        }
+    ],
+    "jvm": {},
+    "js": {
+        "type": "lib"
     },
-    {
-      "type": "Project",
-      "cfg": "commonMainApi",
-      "path": ":k:color"
+    "native": {
+        "type": "Lib"
     },
-    {
-      "type": "Lib",
-      "cfg": "commonMainApi",
-      "key": "kotlinx-serialization-core"
-    },
-    {
-      "type": "Project",
-      "cfg": "commonJvmAndroidTestImplementation",
-      "path": ":k:test"
-    },{
-      "type": "Project",
-      "cfg": "androidInstrumentedTestImplementation",
-      "path": ":k:test:ainstrument"
+    "android": {
+        "type": "Lib"
     }
-  ],
-  "jvm": {},
-  "js": {
-    "type": "lib"
-  },
-  "native": {"type":"Lib"},
-  "android": {
-    "type": "Lib"
-  }
 }

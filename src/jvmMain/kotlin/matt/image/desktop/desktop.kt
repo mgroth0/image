@@ -7,30 +7,21 @@ import matt.image.common.ImmutableRaster
 import matt.image.common.Jpeg
 import matt.image.common.Png
 import matt.image.common.Raster
+import matt.image.common.Rasterizable
 import matt.image.common.WebP
 import matt.image.convert.toPng
 import matt.lang.anno.SupportedByChatGPT
 import matt.lang.anno.ok.JavaIoFileIsOk
 import matt.lang.file.toJFile
-import matt.lang.fnf.runCatchingTrulyNotFound
 import matt.lang.model.file.FsFile
-import matt.lang.model.file.types.RasterImage
-import matt.lang.model.file.types.TypedFile
+import matt.model.data.rect.IntRectSize
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import javax.imageio.ImageIO
 
-
-fun TypedFile<RasterImage, *>.readWidth() = ImageIO.read(toJFile()).width
-
-fun TypedFile<RasterImage, *>.readWidthOrNullIfDoesNotExist() =
-    runCatchingTrulyNotFound {
-        ImageIO.read(toJFile()).width
-    }.getOrNull()
-
-
+fun Rasterizable.toBufferedImage(size: IntRectSize): BufferedImage = rasterize(size).toBufferedImage()
 
 fun ByteArray.readImage() = inputStream().readImage()
 

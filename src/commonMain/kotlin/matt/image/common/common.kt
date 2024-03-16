@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.serializer
 import matt.image.argbToJpeg
 import matt.image.argbToPng
+import matt.image.common.Svg.Serializer
 import matt.image.jpegToPng
 import matt.image.pngToJpeg
 import matt.image.webPToJpeg
@@ -12,17 +13,16 @@ import matt.lang.anno.SeeURLs
 import matt.lang.mime.BinaryMimeData
 import matt.lang.mime.BinaryRepresentableData
 import matt.lang.mime.CachingTextData
+import matt.lang.mime.MimeTypes
 import matt.lang.mime.TextMimeData
 import matt.lang.model.value.MyValueClass
-import matt.lang.model.value.MyValueClassSerializer
-
-
+import matt.model.data.rect.IntRectSize
+import matt.model.data.value.MyValueClassSerializer
 
 
 interface VectorGraphic : Image
 
-
-@Serializable(with = Svg.Serializer::class)
+@Serializable(with = Serializer::class)
 class Svg(val code: String) :
     MyValueClass<String>(code.toString()),
     BinaryRepresentableData by CachingTextData(code.toString()),
@@ -30,11 +30,13 @@ class Svg(val code: String) :
     VectorGraphic {
     constructor(codeSequence: CharSequence) : this(codeSequence.toString())
 
+
     companion object Serializer : MyValueClassSerializer<String, Svg>(serializer<String>()) {
         override fun construct(value: String) = Svg(value)
     }
 
-    override val mimeType = matt.lang.model.file.types.Png.mimeType.copy(subType = "svg", suffix = "xml")
+
+    override val mimeType = MimeTypes.PNG.copy(subType = "svg", suffix = "xml")
     override val asText = code
 }
 
@@ -85,6 +87,13 @@ interface Raster : Image {
 }
 
 sealed interface ImmutableRaster : Raster, ImmutableImage
+interface Rasterizable {
+    fun rasterize(size: IntRectSize): ImmutableRaster
+}
+
+interface PngRasterizable: Rasterizable {
+    override fun rasterize(size: IntRectSize): Png
+}
 
 sealed interface ByteBasedRaster : ImmutableRaster {
     val bytes: ByteArray
@@ -112,7 +121,7 @@ class Png(override val bytes: ByteArray) : NativeAndroidAndSkiaDecodableRaster, 
 
     override fun toJpeg(): Jpeg = pngToJpeg(this)
 
-    override val mimeType get() = matt.lang.model.file.types.Png.mimeType
+    override val mimeType get() = MimeTypes.PNG
 
 
     override val asBinary: ByteArray
